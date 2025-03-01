@@ -10,12 +10,8 @@ from ta.volatility import BollingerBands
 from ta.volume import OnBalanceVolumeIndicator, AccDistIndexIndicator
 from groq import Groq
 import warnings
-import os
 from scipy.stats import norm, skew
 from scipy import stats
-from dotenv import load_dotenv
-
-load_dotenv()
 
 warnings.filterwarnings('ignore')
 pd.options.mode.chained_assignment = None
@@ -582,7 +578,7 @@ class FinancialNarrativeGenerator:
     
         return fig
 
-def main(symbol="TCS.NS", api_key=os.environ.get('GROQ_API_KEY')):
+def main(symbol="TCS.NS", api_key="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"):
     try:
         # Initialize the generator
         generator = FinancialNarrativeGenerator(symbol, api_key)
@@ -629,4 +625,4 @@ def main(symbol="TCS.NS", api_key=os.environ.get('GROQ_API_KEY')):
         return None, None, None, None, None, None
 
 if __name__ == "__main__":
-    results = main("AAPL")
+    results = main("TCS.NS")

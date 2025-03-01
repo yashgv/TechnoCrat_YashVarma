@@ -17,9 +17,8 @@ const ChatMessage = ({ message, isUser }) => {
         <div className="flex flex-col">
           <div className={`p-3 rounded-lg ${isUser ? 'bg-blue-500 text-white' : 'bg-gray-100'}`}>
             <ReactMarkdown
-              className={`markdown ${isUser ? 'text-white' : 'text-gray-900'}`}
               components={{
-                p: ({ children }) => <p className="mb-2 last:mb-0">{children}</p>,
+                p: ({ children }) => <p className={`mb-2 last:mb-0 ${isUser ? 'text-white' : 'text-gray-900'}`}>{children}</p>,
                 ul: ({ children }) => <ul className="list-disc ml-4 mb-2">{children}</ul>,
                 ol: ({ children }) => <ol className="list-decimal ml-4 mb-2">{children}</ol>,
                 li: ({ children }) => <li className="mb-1">{children}</li>,

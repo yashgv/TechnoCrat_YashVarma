@@ -3,16 +3,12 @@
 import yfinance as yf
 import pandas as pd
 import numpy as np
-import os
 from ta.trend import MACD, EMAIndicator
 from ta.momentum import RSIIndicator, StochasticOscillator
 from ta.volatility import BollingerBands
 from ta.volume import OnBalanceVolumeIndicator, AccDistIndexIndicator
 from groq import Groq
 import re
-from dotenv import load_dotenv
-
-load_dotenv()
 
 class FinancialAnalyzer:
     def __init__(self, symbol, api_key):
@@ -116,7 +112,3 @@ class FinancialAnalyzer:
 
         except Exception as e:
             raise Exception(f"Error generating analysis: {str(e)}")
-
-analyzer = FinancialAnalyzer(symbol='AAPL', api_key=os.environ.get('GROQ_API_KEY'))
-historical_data = analyzer.fetch_historical_data()
-print(analyzer.get_analysis(historical_data))

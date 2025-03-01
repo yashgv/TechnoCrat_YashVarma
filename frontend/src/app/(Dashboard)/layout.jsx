@@ -10,6 +10,7 @@ import {
   CreditCard,
   TrendingUp,
   Bot,
+  Home,
   Wallet,
   ArrowUpNarrowWide,
   Menu,
@@ -23,9 +24,16 @@ import Image from 'next/image';
 import finsaathiLogo from "@/assets/logo.png";
 
 const sidebarLinks = [
+
+  {
+    title: "Overview",
+    href: "/dashboard",
+    icon: Home,
+    color: "text-blue-500"
+  },
   {
     title: "Analysis",
-    href: "/dashboard",
+    href: "/dashboard/analysis",
     icon: LayoutDashboard,
     color: "text-blue-500"
   },
@@ -89,7 +97,7 @@ export default function DashboardLayout({ children }) {
               <div className="flex items-center gap-2">
                 <Image alt="logo" src={finsaathiLogo} className="h-8 w-8" />
                 <h1 className="text-xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-                  Fin<span className="font-['Devanagari']">साथी</span>
+                  <span className="font-['Devanagari']">अर्थ</span>AI
                 </h1>
               </div>
             </a>
