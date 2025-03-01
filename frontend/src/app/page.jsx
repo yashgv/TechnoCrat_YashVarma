@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button"
 import { ArrowRight, Check, Menu, Share2, TrendingUp } from 'lucide-react';
 import Image from 'next/image';
 import demo from '@/assets/demoFinsaathi.png';
-import logo from '@/assets/finsaathi-logo.png';
+import logo from '@/assets/logo.png';
 import bg from '@/assets/bg.jpg';
 import wqr from '@/assets/whatsapp-qr.png';
 

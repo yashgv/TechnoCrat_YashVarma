@@ -20,7 +20,7 @@ import Link from "next/link";
 import { ThemeProvider } from "@/components/theme-provider";
 import { ModeToggle } from '@/components/mode-toggle';
 import Image from 'next/image';
-import finsaathiLogo from "@/assets/finsaathi-logo.png";
+import finsaathiLogo from "@/assets/logo.png";
 
 const sidebarLinks = [
   {
