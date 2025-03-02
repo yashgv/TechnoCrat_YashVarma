@@ -311,24 +311,26 @@ const AnalysisDropdown = ({ analysis }) => {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
-    <Card className="hover:shadow-lg transition-shadow duration-200">
-      <CardHeader>
-        <CardTitle className="flex items-center space-x-2">
-          <Button onClick={() => setIsOpen(!isOpen)}>
-            {isOpen ? 'Hide Analysis Steps' : 'Show Analysis Steps'}
-          </Button>
-        </CardTitle>
-      </CardHeader>
-      {isOpen && (
-        <CardContent>
-          <div className="prose prose-sm max-w-none">
-            <ReactMarkdown remarkPlugins={[remarkGfm]}>
-              {analysis}
-            </ReactMarkdown>
-          </div>
-        </CardContent>
-      )}
-    </Card>
+    // <Card className="hover:shadow-lg transition-shadow duration-200">
+    //   <CardHeader>
+    //     <CardTitle className="flex items-center space-x-2">
+    //       <Button onClick={() => setIsOpen(!isOpen)}>
+    //         {isOpen ? 'Hide Analysis Steps' : 'Show Analysis Steps'}
+    //       </Button>
+    //     </CardTitle>
+    //   </CardHeader>
+    //   {isOpen && (
+    //     <CardContent>
+    //       <div className="prose prose-sm max-w-none">
+    //         <ReactMarkdown remarkPlugins={[remarkGfm]}>
+    //           {analysis}
+    //         </ReactMarkdown>
+    //       </div>
+    //     </CardContent>
+    //   )}
+    // </Card>
+    <>
+    </>
   );
 };
 

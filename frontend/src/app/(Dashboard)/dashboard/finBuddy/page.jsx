@@ -89,7 +89,7 @@ const ChatBot = () => {
     // Show welcome message and help on component mount
     setMessages([{
       type: 'text',
-      content: `👋 Welcome to FinSaathi AI! I can help you analyze financial documents and answer your questions.`,
+      content: `👋 Welcome to ArthAI! I can help you analyze financial documents and answer your questions.`,
       timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
       status: true,
     }]);
@@ -238,7 +238,7 @@ const ChatBot = () => {
     <div className="flex flex-col h-screen max-w-3xl mx-auto">
       <div className="flex items-center justify-between p-4 border-b">
         <div className="flex items-center gap-4">
-          <h1 className="text-xl font-bold">FinSaathi AI</h1>
+          <h1 className="text-xl font-bold">ArthAI</h1>
         </div>
         <div className="flex items-center gap-2">
           <UserButton

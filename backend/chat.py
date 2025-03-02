@@ -161,7 +161,7 @@ class FinSaathiAI:
     def get_response(self, user_input):
         try:
             # Prepare context with document content if available
-            system_content = """You are FinSaathi, a Market Education and Financial Document Analysis Expert. 
+            system_content = """You are ArthAI, a Market Education and Financial Document Analysis Expert. 
             You explain financial concepts, investment principles, and economic fundamentals in a clear and engaging way. 
             You can analyze financial documents, regulatory filings, earnings reports, and extract key insights.
             You're fluent in financial terminology and jargon. If a user asks an off-topic question, 
@@ -328,7 +328,7 @@ def whatsapp_webhook():
     elif incoming_msg.lower() in ['help', 'commands']:
         # Show available commands
         help_text = """
-FinSaathi WhatsApp Commands 📱
+ArthAI WhatsApp Commands 📱
 
 - Send a PDF or image document to analyze it
 - Type summarize to get a summary of the current document
@@ -340,7 +340,7 @@ FinSaathi WhatsApp Commands 📱
     elif incoming_msg.lower() in ['hi', 'hello', 'start']:
         # Welcome message
         welcome_text = """
-Welcome to FinSaathi! 🤖
+Welcome to ArthAI! 🤖
 
 I'm your financial assistant. I can help with:
 
@@ -365,7 +365,7 @@ Type help to see all commands.
 
 def run_terminal_chatbot():
     """Run the chatbot in a continuous loop in the terminal"""
-    print("\n===== FinSaathi Market Education & Document Analysis Chatbot =====")
+    print("\n===== ArthAI Market Education & Document Analysis Chatbot =====")
     print("Commands:")
     print("- Type 'exit', 'quit', or 'bye' to end the conversation")
     print("- Type 'upload <path>' to upload and automatically analyze a document")
@@ -386,20 +386,20 @@ def run_terminal_chatbot():
         
         # Check if user wants to exit
         if user_input.lower() in ['exit', 'quit', 'bye']:
-            print("\nThank you for using FinSaathi! Goodbye.")
+            print("\nThank you for using ArthAI! Goodbye.")
             break
         
         # Check for document upload command
         if user_input.lower().startswith('upload '):
             doc_path = user_input[7:].strip()
-            print("\nFinSaathi: Processing your document. This may take a moment...")
+            print("\ArthAI: Processing your document. This may take a moment...")
             result = chatbot.upload_document(doc_path)
-            print(f"\nFinSaathi: {result}")
+            print(f"\ArthAI: {result}")
             continue
         
         # Check for summarize command
         if user_input.lower() == 'summarize':
-            print("\nFinSaathi: Generating document summary...")
+            print("\ArthAI: Generating document summary...")
             summary = chatbot.summarize_document()
             print(summary)
             continue
@@ -410,7 +410,7 @@ def run_terminal_chatbot():
         
         # Get and display the response
         try:
-            print("\nFinSaathi: ", end="")
+            print("\ArthAI: ", end="")
             response = chatbot.get_response(user_input)
             print(response)
         except Exception as e:
