@@ -5,6 +5,8 @@ One-stop solution for stock analysis, real-time trading simulation, live updates
 
 ![alt text](frontend/image-1.png)
 
+![alt text](image.png)
+
 ## Project Overview
 This project aims to create an AI-powered financial tool that helps users:
 Analyze stocks using market trends and technical indicators
