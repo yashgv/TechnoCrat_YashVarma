@@ -5,7 +5,7 @@ One-stop solution for stock analysis, real-time trading simulation, live updates
 
 ![alt text](frontend/image-1.png)
 
-![alt text]("img.png")
+![alt text](img.png)
 
 
 ## Project Overview
