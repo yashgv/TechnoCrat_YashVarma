@@ -1,36 +1,101 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+## AI-Driven Equity Market Analysis & Stock Prediction
+One-stop solution for stock analysis, real-time trading simulation, live updates, financial document processing, and AI-powered stock recommendations.
+![alt text](image.png)
+## Project Overview
+This project aims to create an AI-powered financial tool that helps users:
+Analyze stocks using market trends and technical indicators
+Simulate real-time trading and backtest strategies
+Process financial documents using Agentic Document Extraction API
+Get real-time updates on stocks via WhatsApp (Twilio API)
+Chat with AI to clarify financial jargon and analyze documents
+![alt text](image-1.png)
+## Features
+Financial Document Processing – Extracts insights using OCR + RAG
+Live Market Data – Aggregates stock prices, news, and economic trends
+AI Stock Recommendations – Uses ML models for stock analysis
+Trading Simulation – Real-time trade testing & strategy analysis
+AI Chatbot – Explains financial jargon and document insights
+WhatsApp Alerts – Sends stock updates & reports via Twilio API
 
-## Getting Started
+## Tech Stack
+Frontend:	React.js, Next.js, Tailwind CSS
+Backend:	Node.js, Flask ,Monte Garlo simulation , Twilio APi , Yahoo Finance
+AI/NLP:	deepseek-r1-distill-llama-70b , llama 3.2- 90b
+Document Processing:	Agentic Document Extraction ,RAG
 
-First, run the development server:
+# Installation Guide
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+## Prerequisites
+Ensure you have the following installed:
+- Node.js (v16+)
+- Python (v3.8+)
+- npm / yarn
+- pip / pipenv
+- Git
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+---
 
-You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
+## Backend Setup (FastAPI & Flask)
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+### Clone the Repository
+bash
+git clone https://github.com/your-username/your-repo.git
+cd your-repo/backend
 
-## Learn More
 
-To learn more about Next.js, take a look at the following resources:
+### Create and Activate a Virtual Environment
+bash
+python -m venv venv
+source venv/bin/activate  # For Mac/Linux
+venv\Scripts\activate    # For Windows
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
+### Install Dependencies
+bash
+pip install -r requirements.txt
 
-## Deploy on Vercel
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+### Set Up Environment Variables
+Create a .env file in the backend directory:
+ini
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+TWILIO_SID="your_twilio_sid"
+TWILIO_AUTH_TOKEN="your_twilio_auth_token"
+
+
+
+### Run the Backend Server
+bash
+uvicorn main:app --reload
+
+
+Backend will run at http://127.0.0.1:8000/.
+
+---
+
+## Frontend Setup (React.js & Next.js)
+
+### Navigate to the Frontend Directory
+bash
+cd ../frontend
+
+
+### Install Dependencies
+bash
+npm install  # or yarn install
+
+
+### Set Up Environment Variables
+Create a .env.local file in the frontend directory:
+ini
+NEXT_PUBLIC_BACKEND_URL="http://127.0.0.1:8000/"
+
+
+### Run the Frontend Server
+bash
+npm run dev  # or yarn dev
+
+
+Frontend will run at http://localhost:3000/.
+
+---
