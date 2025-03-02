@@ -5,7 +5,7 @@ One-stop solution for stock analysis, real-time trading simulation, live updates
 
 ![alt text](frontend/image-1.png)
 
-![alt text]("Screenshot 2025-03-02 095445.png")
+![alt text]("Screenshot2025-03-02095445.png")
 
 ## Project Overview
 This project aims to create an AI-powered financial tool that helps users:
