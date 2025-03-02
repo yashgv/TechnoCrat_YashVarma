@@ -120,11 +120,26 @@ export default function DashboardPage() {
 
   // Initialize from localStorage with sample data
   useEffect(() => {
-    const savedPortfolio = storage.getPortfolio();
-    setPortfolio(savedPortfolio);
-    
-    const savedWatchlist = storage.getWatchlist();
-    setWatchlist(savedWatchlist);
+    try {
+      const savedPortfolio = storage.getPortfolio();
+      console.log('Loading portfolio:', savedPortfolio); // Debug log
+      if (savedPortfolio && savedPortfolio.positions) {
+        setPortfolio(savedPortfolio);
+      }
+      
+      const savedWatchlist = storage.getWatchlist();
+      if (savedWatchlist) {
+        setWatchlist(savedWatchlist);
+      }
+    } catch (error) {
+      console.error('Error loading data from storage:', error);
+      // Fallback to default values
+      setPortfolio({
+        balance: 1000000,
+        positions: []
+      });
+      setWatchlist([]);
+    }
     
     // Start market status checker
     const statusInterval = setInterval(checkMarketStatus, 60000);
@@ -471,7 +486,7 @@ export default function DashboardPage() {
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900 mx-auto mb-4"></div>
           <p>Loading dashboard data...</p>
-          <p className="text-muted-foreground mt-2">Connecting to Indian market...</p>
+          <p className="text-muted-foreground mt-2">Connecting...</p>
         </div>
       </div>
     )
@@ -482,7 +497,7 @@ export default function DashboardPage() {
       {/* Header */}
       <div className="flex justify-between items-center border-b pb-4">
         <div>
-          <h2 className="text-3xl font-bold">Indian Market Dashboard</h2>
+          <h2 className="text-3xl font-bold">Dashboard</h2>
           <div className="flex items-center gap-2 mt-1">
             <Badge 
               variant={marketStatus.isOpen ? "success" : "destructive"}

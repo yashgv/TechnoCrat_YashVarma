@@ -2,77 +2,63 @@
 
 import { useEffect, useRef, memo } from 'react'
 
-function TradingViewWidget({ symbol = 'AAPL', market = 'NSE' }) {
+function TradingViewWidget({ symbol, market }) {
   const container = useRef()
 
   useEffect(() => {
     if (!symbol) return;
 
     const getSymbolWithExchange = () => {
-      // Support for various exchanges
-      switch (market) {
-        case 'NSE':
-          return `NSE:${symbol.split('.')[0]}`
-        case 'BSE':
-          return `BSE:${symbol.split('.')[0]}`
-        case 'NYSE':
-          return `NYSE:${symbol}`
-        case 'NASDAQ':
-          return `NASDAQ:${symbol}`
+      switch (market?.id) {
+        case 'IN':
+          return `NSE:${symbol}`
+        case 'UK':
+          return `LSE:${symbol}`
+        case 'JP':
+          return `JPX:${symbol}`
         default:
-          return symbol
+          return `NASDAQ:${symbol}`
       }
     }
 
     const script = document.createElement("script")
-    script.src = "https://s3.tradingview.com/tv.js"
+    script.src = "https://s3.tradingview.com/external-embedding/embed-widget-advanced-chart.js"
+    script.type = "text/javascript"
     script.async = true
 
-    script.onload = () => {
-      if (typeof window.TradingView !== 'undefined' && container.current) {
-        new window.TradingView.widget({
-          "autosize": true,
-          "symbol": getSymbolWithExchange(),
-          "interval": "D",
-          "timezone": "Asia/Kolkata",
-          "theme": "light",
-          "style": "1",
-          "locale": "in",
-          "toolbar_bg": "#f1f3f6",
-          "enable_publishing": false,
-          "allow_symbol_change": true,
-          "container_id": container.current.id,
-          "hide_top_toolbar": false,
-          "hide_legend": false,
-          "save_image": true,
-          "studies": [
-            "Volume@tv-basicstudies",
-            "VWAP@tv-basicstudies"
-          ],
-          "show_popup_button": true,
-          "popup_width": "1000",
-          "popup_height": "650",
-        });
-      }
-    };
+    script.innerHTML = `
+      {
+        "width": "100%",
+        "height": "600",
+        "symbol": "${getSymbolWithExchange()}",
+        "interval": "D",
+        "timezone": "Etc/UTC",
+        "theme": "light",
+        "style": "1",
+        "locale": "en",
+        "enable_publishing": false,
+        "allow_symbol_change": true,
+        "support_host": "https://www.tradingview.com"
+      }`
 
-    container.current.innerHTML = '';
-    container.current.appendChild(script);
+    if (container.current) {
+      container.current.innerHTML = ''
+      container.current.appendChild(script)
+    }
 
     return () => {
       if (container.current) {
-        container.current.innerHTML = '';
+        container.current.innerHTML = ''
       }
     }
   }, [symbol, market])
 
+  if (!symbol) return null;
+
   return (
-    <div 
-      id={`tradingview_${symbol.replace(/[^a-zA-Z0-9]/g, '')}`}
-      ref={container} 
-      className="tradingview-widget-container" 
-      style={{ height: "100%", width: "100%" }}
-    />
+    <div className="tradingview-widget-container" ref={container}>
+      <div className="tradingview-widget-container__widget"></div>
+    </div>
   )
 }
 

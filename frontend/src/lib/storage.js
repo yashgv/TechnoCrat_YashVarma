@@ -7,6 +7,15 @@ const STORAGE_KEYS = {
 // Sample initial holdings
 const DEFAULT_HOLDINGS = [
   {
+    symbol: 'AAPL',
+    name: 'Apple Inc.',
+    quantity: 10,
+    entry_price: 170.50,
+    current_price: 170.50,
+    pl: 0,
+    bought_at: new Date().toISOString()
+  },
+  {
     symbol: 'RELIANCE.NS',
     name: 'Reliance Industries',
     quantity: 50,
@@ -35,14 +44,25 @@ const DEFAULT_HOLDINGS = [
 
 export const storage = {
   getPortfolio: () => {
-    const saved = localStorage.getItem(STORAGE_KEYS.PORTFOLIO);
-    if (saved) {
-      return JSON.parse(saved);
+    try {
+      const saved = localStorage.getItem(STORAGE_KEYS.PORTFOLIO);
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        console.log('Loaded portfolio from storage:', parsed);
+        return parsed;
+      }
+      console.log('No saved portfolio, using default');
+      return {
+        balance: 1000000,
+        positions: DEFAULT_HOLDINGS
+      };
+    } catch (error) {
+      console.error('Error loading portfolio:', error);
+      return {
+        balance: 1000000,
+        positions: DEFAULT_HOLDINGS
+      };
     }
-    return {
-      balance: 1000000, // 10 lakhs initial balance
-      positions: DEFAULT_HOLDINGS
-    };
   },
 
   savePortfolio: (portfolio) => {

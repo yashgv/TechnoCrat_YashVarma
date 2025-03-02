@@ -7,7 +7,7 @@ import Image from 'next/image';
 import demo from '@/assets/demoFinsaathi.png';
 import logo from '@/assets/logo.png';
 import bg from '@/assets/bg.jpg';
-import wqr from '@/assets/whatsapp-qr.png';
+import wqr from '@/assets/whatsapp-qr.svg';
 
 import {
   ClerkProvider,
@@ -133,7 +133,7 @@ const HomePage = () => {
                   <p className="font-medium flex items-center gap-2">
                     <span className="text-black-600">➤</span> Send 
                     <code className="mx-2 px-2 py-1 bg-primary/10 text-primary rounded">
-                    join label-strength
+                    join grabbed-complete
                     </code> 
                     to
                   </p>

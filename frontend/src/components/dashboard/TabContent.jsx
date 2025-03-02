@@ -3,80 +3,17 @@ import { ExploreTab } from './tabs/ExploreTab';
 import { HoldingsTab } from './tabs/HoldingsTab';
 import { WatchlistTab } from './tabs/WatchlistTab';
 
-export function TabContent({ 
-  activeTab,
-  portfolio,
-  stockDetails,
-  watchlist,
-  stocksData,
-  candleData,
-  timeframe,
-  setTimeframe,
-  onSelectStock,
-  onToggleWatchlist,
-  executeTrade,
-  formatCurrency,
-  formatNumber,
-  formatPercentage,
-  marketStatus,
-  searchQuery,
-  searchResults,
-  handleSearch
-}) {
+export function TabContent({ activeTab, ...props }) {
   switch (activeTab) {
     case 'overview':
-      return (
-        <OverviewTab 
-          portfolio={portfolio}
-          formatCurrency={formatCurrency}
-          onSelectStock={onSelectStock}
-        />
-      );
+      return <OverviewTab {...props} />;
     case 'explore':
-      return (
-        <ExploreTab
-          stockDetails={stockDetails}
-          candleData={candleData}
-          timeframe={timeframe}
-          setTimeframe={setTimeframe}
-          searchQuery={searchQuery}
-          searchResults={searchResults}
-          handleSearch={handleSearch}
-          onSelectStock={onSelectStock}
-          onToggleWatchlist={onToggleWatchlist}
-          watchlist={watchlist}
-          portfolio={portfolio}
-          formatCurrency={formatCurrency}
-          marketStatus={marketStatus}
-          executeTrade={executeTrade}
-        />
-      );
+      return <ExploreTab {...props} />;
     case 'holdings':
-      return (
-        <HoldingsTab 
-          portfolio={portfolio}
-          formatCurrency={formatCurrency}
-          onSelectStock={onSelectStock}
-        />
-      );
+      return <HoldingsTab {...props} />;
     case 'watchlist':
-      return (
-        <WatchlistTab 
-          watchlist={watchlist}
-          stocksData={stocksData}
-          formatCurrency={formatCurrency}
-          formatPercentage={formatPercentage}
-          onSelectStock={onSelectStock}
-          onToggleWatchlist={onToggleWatchlist}
-        />
-      );
+      return <WatchlistTab {...props} />;
     default:
-      return (
-        <OverviewTab 
-          portfolio={portfolio}
-          formatCurrency={formatCurrency}
-          onSelectStock={onSelectStock}
-        />
-      );
+      return <OverviewTab {...props} />;
   }
 }

@@ -5,7 +5,7 @@ export function HoldingsTab({ portfolio, formatCurrency, onSelectStock }) {
   const totalInvestment = portfolio.positions.reduce((sum, pos) => sum + (pos.entry_price * pos.quantity), 0);
   const currentValue = portfolio.positions.reduce((sum, pos) => sum + (pos.current_price * pos.quantity), 0);
   const totalPL = currentValue - totalInvestment;
-  const plPercentage = (totalPL / totalInvestment) * 100;
+  const plPercentage = totalInvestment > 0 ? (totalPL / totalInvestment) * 100 : 0;
 
   return (
     <div className="space-y-6">
@@ -67,8 +67,9 @@ export function HoldingsTab({ portfolio, formatCurrency, onSelectStock }) {
                         <p className="font-medium">₹{formatCurrency(position.entry_price)}</p>
                       </div>
                       <div className="text-right">
-                        <p className="text-sm text-muted-foreground">P&L</p>
-                        <p className={`font-medium ${position.pl >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                        <p className="text-sm text-muted-foreground">Current Value</p>
+                        <p className="font-medium">₹{formatCurrency(position.current_price * position.quantity)}</p>
+                        <p className={`text-sm ${position.pl >= 0 ? 'text-green-600' : 'text-red-600'}`}>
                           {position.pl >= 0 ? '+' : ''}₹{formatCurrency(position.pl)}
                         </p>
                       </div>
