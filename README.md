@@ -5,7 +5,7 @@ One-stop solution for stock analysis, real-time trading simulation, live updates
 
 ![alt text](frontend/image-1.png)
 
-[![alt text](image.png)](https://github.com/yashgv/TechnoCrat_YashVarma/blob/main/Screenshot%202025-03-02%20095445.png)
+![alt text]("Screenshot 2025-03-02 095445.png")
 
 ## Project Overview
 This project aims to create an AI-powered financial tool that helps users:
