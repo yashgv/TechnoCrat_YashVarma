@@ -1,6 +1,10 @@
 ## AI-Driven Equity Market Analysis & Stock Prediction
 One-stop solution for stock analysis, real-time trading simulation, live updates, financial document processing, and AI-powered stock recommendations.
-![alt text](image.png)
+
+C:\Users\yv449\Desktop\Synergy\test\TechnoCrat_YashVarma\frontend\image.png
+
+C:\Users\yv449\Desktop\Synergy\test\TechnoCrat_YashVarma\frontend\image-1.png
+
 ## Project Overview
 This project aims to create an AI-powered financial tool that helps users:
 Analyze stocks using market trends and technical indicators
@@ -8,7 +12,7 @@ Simulate real-time trading and backtest strategies
 Process financial documents using Agentic Document Extraction API
 Get real-time updates on stocks via WhatsApp (Twilio API)
 Chat with AI to clarify financial jargon and analyze documents
-![alt text](image-1.png)
+
 ## Features
 Financial Document Processing – Extracts insights using OCR + RAG
 Live Market Data – Aggregates stock prices, news, and economic trends
