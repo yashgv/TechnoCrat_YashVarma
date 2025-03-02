@@ -118,49 +118,53 @@ export default function DashboardPage() {
     days: [1, 2, 3, 4, 5] // Monday to Friday
   };
 
-  // Initialize from localStorage with sample data
+  // Initialize data from localStorage
   useEffect(() => {
     try {
+      // Initialize storage with defaults if needed
+      storage.initializeStorage();
+
+      // Load portfolio
       const savedPortfolio = storage.getPortfolio();
-      console.log('Loading portfolio:', savedPortfolio); // Debug log
-      if (savedPortfolio && savedPortfolio.positions) {
-        setPortfolio(savedPortfolio);
-      }
-      
+      console.log('Loading portfolio:', savedPortfolio);
+      setPortfolio(savedPortfolio);
+
+      // Load watchlist
       const savedWatchlist = storage.getWatchlist();
-      if (savedWatchlist) {
-        setWatchlist(savedWatchlist);
-      }
-    } catch (error) {
-      console.error('Error loading data from storage:', error);
-      // Fallback to default values
-      setPortfolio({
-        balance: 1000000,
-        positions: []
-      });
-      setWatchlist([]);
-    }
-    
-    // Start market status checker
-    const statusInterval = setInterval(checkMarketStatus, 60000);
-    checkMarketStatus();
-    
-    // Simulate API loading
-    setTimeout(() => {
+      console.log('Loading watchlist:', savedWatchlist);
+      setWatchlist(savedWatchlist);
+
+      // Start market status checker
+      const statusInterval = setInterval(checkMarketStatus, 60000);
+      checkMarketStatus();
+
+      // Initial data fetch
       setLoading(false);
       fetchAllData();
-    }, 1500);
-    
-    return () => clearInterval(statusInterval);
+
+      return () => clearInterval(statusInterval);
+    } catch (error) {
+      console.error('Error initializing dashboard:', error);
+      toast({
+        title: "Error",
+        description: "Failed to load saved data",
+        variant: "destructive",
+      });
+    }
   }, []);
 
-  // Save changes to localStorage
+  // Save portfolio changes to localStorage
   useEffect(() => {
-    storage.savePortfolio(portfolio);
+    if (portfolio) {
+      storage.savePortfolio(portfolio);
+    }
   }, [portfolio]);
 
+  // Save watchlist changes to localStorage
   useEffect(() => {
-    storage.saveWatchlist(watchlist);
+    if (watchlist) {
+      storage.saveWatchlist(watchlist);
+    }
   }, [watchlist]);
   
   // Fetch stock details when selected stock changes

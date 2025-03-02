@@ -1,7 +1,26 @@
+import { useEffect, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ArrowUpRight, ArrowDownRight, Briefcase } from "lucide-react";
+import { storage } from '@/lib/storage';
 
-export function HoldingsTab({ portfolio, formatCurrency, onSelectStock }) {
+export function HoldingsTab({ formatCurrency, onSelectStock }) {
+  const [portfolio, setPortfolio] = useState(null);
+
+  useEffect(() => {
+    // Load portfolio data from storage
+    const savedPortfolio = storage.getPortfolio();
+    setPortfolio(savedPortfolio);
+  }, []);
+
+  if (!portfolio) {
+    return (
+      <div className="text-center py-12">
+        <Briefcase className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+        <h3 className="text-lg font-medium">Loading Holdings...</h3>
+      </div>
+    );
+  }
+
   const totalInvestment = portfolio.positions.reduce((sum, pos) => sum + (pos.entry_price * pos.quantity), 0);
   const currentValue = portfolio.positions.reduce((sum, pos) => sum + (pos.current_price * pos.quantity), 0);
   const totalPL = currentValue - totalInvestment;
@@ -41,7 +60,12 @@ export function HoldingsTab({ portfolio, formatCurrency, onSelectStock }) {
       {/* Holdings List */}
       <Card>
         <CardHeader>
-          <CardTitle>Your Holdings</CardTitle>
+          <CardTitle className="flex items-center justify-between">
+            Your Holdings
+            <span className="text-sm text-muted-foreground">
+              {portfolio.positions.length} Positions
+            </span>
+          </CardTitle>
         </CardHeader>
         <CardContent>
           {portfolio.positions.length > 0 ? (
@@ -58,11 +82,11 @@ export function HoldingsTab({ portfolio, formatCurrency, onSelectStock }) {
                         <h4 className="font-medium">{position.name}</h4>
                         <p className="text-sm text-muted-foreground">{position.symbol}</p>
                       </div>
-                      <div>
+                      <div className="text-right md:text-left">
                         <p className="text-sm text-muted-foreground">Quantity</p>
                         <p className="font-medium">{position.quantity}</p>
                       </div>
-                      <div>
+                      <div className="text-right md:text-left">
                         <p className="text-sm text-muted-foreground">Avg. Price</p>
                         <p className="font-medium">₹{formatCurrency(position.entry_price)}</p>
                       </div>
@@ -82,7 +106,7 @@ export function HoldingsTab({ portfolio, formatCurrency, onSelectStock }) {
             <div className="text-center py-12">
               <Briefcase className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
               <h3 className="text-lg font-medium mb-2">No Holdings Yet</h3>
-              <p className="text-sm text-muted-foreground">Start investing to build your portfolio</p>
+              <p className="text-sm text-muted-foreground">Start trading to build your portfolio</p>
             </div>
           )}
         </CardContent>

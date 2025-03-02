@@ -4,7 +4,7 @@ const STORAGE_KEYS = {
   TRADES: 'paper_trading_trades'
 };
 
-// Sample initial holdings
+// Initial portfolio data
 const DEFAULT_HOLDINGS = [
   {
     symbol: 'AAPL',
@@ -12,46 +12,39 @@ const DEFAULT_HOLDINGS = [
     quantity: 10,
     entry_price: 170.50,
     current_price: 170.50,
-    pl: 0,
-    bought_at: new Date().toISOString()
-  },
-  {
-    symbol: 'RELIANCE.NS',
-    name: 'Reliance Industries',
-    quantity: 50,
-    entry_price: 2450.75,
-    current_price: 2450.75,
-    pl: 0,
-    bought_at: new Date().toISOString()
-  },
-  {
-    symbol: 'TCS.NS',
-    name: 'Tata Consultancy Services',
-    quantity: 25,
-    entry_price: 3680.50,
-    current_price: 3680.50,
-    pl: 0
-  },
-  {
-    symbol: 'INFY.NS',
-    name: 'Infosys',
-    quantity: 100,
-    entry_price: 1560.25,
-    current_price: 1560.25,
     pl: 0
   }
 ];
 
+// Initial watchlist data
+const DEFAULT_WATCHLIST = ['MSFT', 'GOOGL', 'AMZN', 'AAPL'];
+
 export const storage = {
+  initializeStorage: () => {
+    // Initialize portfolio if not exists
+    if (!localStorage.getItem(STORAGE_KEYS.PORTFOLIO)) {
+      localStorage.setItem(STORAGE_KEYS.PORTFOLIO, JSON.stringify({
+        balance: 1000000,
+        positions: DEFAULT_HOLDINGS
+      }));
+    }
+
+    // Initialize watchlist if not exists
+    if (!localStorage.getItem(STORAGE_KEYS.WATCHLIST)) {
+      localStorage.setItem(STORAGE_KEYS.WATCHLIST, JSON.stringify(DEFAULT_WATCHLIST));
+    }
+  },
+
   getPortfolio: () => {
     try {
       const saved = localStorage.getItem(STORAGE_KEYS.PORTFOLIO);
       if (saved) {
         const parsed = JSON.parse(saved);
-        console.log('Loaded portfolio from storage:', parsed);
-        return parsed;
+        return {
+          balance: parsed.balance || 1000000,
+          positions: Array.isArray(parsed.positions) ? parsed.positions : DEFAULT_HOLDINGS
+        };
       }
-      console.log('No saved portfolio, using default');
       return {
         balance: 1000000,
         positions: DEFAULT_HOLDINGS
@@ -66,19 +59,31 @@ export const storage = {
   },
 
   savePortfolio: (portfolio) => {
-    localStorage.setItem(STORAGE_KEYS.PORTFOLIO, JSON.stringify(portfolio));
+    try {
+      localStorage.setItem(STORAGE_KEYS.PORTFOLIO, JSON.stringify(portfolio));
+      console.log('Portfolio saved:', portfolio);
+    } catch (error) {
+      console.error('Error saving portfolio:', error);
+    }
   },
 
   getWatchlist: () => {
-    const saved = localStorage.getItem(STORAGE_KEYS.WATCHLIST);
-    if (saved) {
-      return JSON.parse(saved);
+    try {
+      const saved = localStorage.getItem(STORAGE_KEYS.WATCHLIST);
+      return saved ? JSON.parse(saved) : DEFAULT_WATCHLIST;
+    } catch (error) {
+      console.error('Error loading watchlist:', error);
+      return DEFAULT_WATCHLIST;
     }
-    return ['RELIANCE.NS', 'TCS.NS', 'HDFCBANK.NS', 'INFY.NS'];
   },
 
   saveWatchlist: (watchlist) => {
-    localStorage.setItem(STORAGE_KEYS.WATCHLIST, JSON.stringify(watchlist));
+    try {
+      localStorage.setItem(STORAGE_KEYS.WATCHLIST, JSON.stringify(watchlist));
+      console.log('Watchlist saved:', watchlist);
+    } catch (error) {
+      console.error('Error saving watchlist:', error);
+    }
   },
 
   clearAll: () => {
