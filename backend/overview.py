@@ -1,4 +1,3 @@
-
 from flask import Flask, jsonify, request, copy_current_request_context
 from flask_socketio import SocketIO, emit
 from flask_cors import CORS
@@ -9,6 +8,10 @@ from flask_sqlalchemy import SQLAlchemy
 from threading import Thread
 import time
 import asyncio
+import os
+from stock_rec import StockAnalyzer
+
+analyzer = StockAnalyzer(os.getenv('GROQ_API_KEY'))
 
 app = Flask(__name__)
 CORS(app)
@@ -79,27 +82,58 @@ def background_task():
                 print(f"Background task error: {str(e)}")
                 time.sleep(5)  # Wait 5 seconds before retrying on error
 
+def get_stock_info_safely(symbol):
+    """Safely fetch stock info with retries and error handling"""
+    max_retries = 3
+    for attempt in range(max_retries):
+        try:
+            stock = yf.Ticker(symbol)
+            info = stock.info
+            
+            if not info or 'regularMarketPrice' not in info:
+                raise ValueError(f"No data available for {symbol}")
+                
+            return stock, info
+        except Exception as e:
+            if attempt == max_retries - 1:
+                print(f"Failed to fetch data for {symbol} after {max_retries} attempts: {str(e)}")
+                return None, None
+            time.sleep(1)  # Wait before retry
+
 @app.route('/api/stock/<symbol>')
 def get_stock_data(symbol):
     try:
-        stock = yf.Ticker(symbol)
-        hist = stock.history(period='1d', interval='1m')
-        info = stock.info
+        stock, info = get_stock_info_safely(symbol)
+        if not stock or not info:
+            return jsonify({'error': f'Unable to fetch data for {symbol}'}), 404
+            
+        # Try to get historical data with fallback
+        try:
+            hist = stock.history(period='1d', interval='1m')
+            if hist.empty:
+                hist = stock.history(period='1d')
+        except:
+            hist = stock.history(period='1d')
+        
+        if hist.empty:
+            return jsonify({'error': f'No historical data available for {symbol}'}), 404
+            
+        current_price = info.get('regularMarketPrice', info.get('currentPrice', 0))
         
         return jsonify({
             'symbol': symbol,
-            'name': info.get('longName', ''),
-            'price': hist.iloc[-1]['Close'],
+            'name': info.get('longName', symbol),
+            'price': current_price,
             'change': info.get('regularMarketChangePercent', 0),
             'volume': info.get('volume', 0),
             'marketCap': info.get('marketCap', 0),
-            'historical': hist.to_dict('records'),
+            'historical': hist.reset_index().to_dict('records'),
             'details': {
-                'pe_ratio': info.get('forwardPE', 0),
+                'pe_ratio': info.get('forwardPE', info.get('trailingPE', 0)),
                 'dividend_yield': info.get('dividendYield', 0),
                 'beta': info.get('beta', 0),
-                'week52_high': info.get('fiftyTwoWeekHigh', 0),
-                'week52_low': info.get('fiftyTwoWeekLow', 0)
+                'week52_high': info.get('fiftyTwoWeekHigh', current_price * 1.1),
+                'week52_low': info.get('fiftyTwoWeekLow', current_price * 0.9)
             }
         })
     except Exception as e:
@@ -207,6 +241,33 @@ def execute_trade():
         return jsonify({'success': True, 'balance': portfolio.balance})
         
     except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/stock-recommendations')
+def get_stock_recommendations():
+    try:
+        recommendations = analyzer.get_market_recommendations()
+        # Ensure recommendations is a list
+        if not isinstance(recommendations, list):
+            if isinstance(recommendations, dict) and 'stocks' in recommendations:
+                recommendations = recommendations['stocks']
+            else:
+                recommendations = []
+        
+        # Validate each recommendation
+        valid_recommendations = []
+        for rec in recommendations:
+            if isinstance(rec, dict) and 'symbol' in rec:
+                # Ensure required nested structures exist
+                if 'recommendation' not in rec:
+                    rec['recommendation'] = {'action': 'UNKNOWN', 'target_price': 0, 'stop_loss': 0}
+                if 'confidence_metrics' not in rec:
+                    rec['confidence_metrics'] = {'technical_score': 0, 'risk_score': 0}
+                valid_recommendations.append(rec)
+        
+        return jsonify(valid_recommendations)
+    except Exception as e:
+        print(f"Error in recommendations: {str(e)}")
         return jsonify({'error': str(e)}), 500
 
 @socketio.on('connect')
