@@ -78,3 +78,17 @@ body {
 }
 
 
+/* Add to your global.css */
+.tradingview-widget-container {
+  height: 100%;
+  width: 100%;
+}
+
+.market-card {
+  transition: all 0.3s ease;
+}
+
+.market-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+}

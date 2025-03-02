@@ -1,6 +1,6 @@
 'use client'
 import React, { useState, useRef, useEffect } from 'react';
-import { Send, Copy, ThumbsUp, ThumbsDown, MoreVertical } from 'lucide-react';
+import { Send, Copy, ThumbsUp, ThumbsDown, MoreVertical, Upload } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { UserButton } from "@clerk/nextjs";
 import ReactMarkdown from 'react-markdown';
@@ -59,7 +59,9 @@ const ChatBot = () => {
   const [messages, setMessages] = useState([]);
   const [inputValue, setInputValue] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState(0);
   const messagesEndRef = useRef(null);
+  const fileInputRef = useRef(null);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -68,6 +70,31 @@ const ChatBot = () => {
   useEffect(() => {
     scrollToBottom();
   }, [messages]);
+
+  // Add commands help message
+  const showHelp = () => {
+    setMessages(prev => [...prev, {
+      type: 'text',
+      content: `Available commands:
+- Upload a PDF or image file to analyze it
+- Type 'summarize' to get a summary of the current document
+- Ask any questions about the uploaded document or financial topics
+- Type 'help' to see this message again`,
+      timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+      status: true,
+    }]);
+  };
+
+  useEffect(() => {
+    // Show welcome message and help on component mount
+    setMessages([{
+      type: 'text',
+      content: `👋 Welcome to FinSaathi AI! I can help you analyze financial documents and answer your questions.`,
+      timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+      status: true,
+    }]);
+    showHelp();
+  }, []);
   
   const handleSend = async () => {
     if (inputValue.trim() && !isLoading) {
@@ -77,6 +104,14 @@ const ChatBot = () => {
         timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
         status: true,
       };
+
+      // Handle special commands
+      if (inputValue.toLowerCase() === 'help') {
+        setMessages(prev => [...prev, userMessage]);
+        showHelp();
+        setInputValue('');
+        return;
+      }
       
       setMessages(prev => [...prev, userMessage]);
       setInputValue('');
@@ -117,6 +152,81 @@ const ChatBot = () => {
     }
   };
 
+  const addLoadingMessage = () => {
+    setMessages(prev => [...prev, {
+      type: 'text',
+      content: '⏳ Processing your document...',
+      timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+      status: true,
+    }]);
+  };
+
+  const handleFileUpload = async (event) => {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    // Validate file size (10MB limit)
+    if (file.size > 10 * 1024 * 1024) {
+      setMessages(prev => [...prev, {
+        type: 'text',
+        content: '❌ File size too large. Please upload files smaller than 10MB.',
+        timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+        status: true,
+      }]);
+      return;
+    }
+
+    setIsLoading(true);
+    addLoadingMessage();
+    const formData = new FormData();
+    formData.append('file', file);
+
+    try {
+      const response = await fetch('http://localhost:5000/api/upload', {
+        method: 'POST',
+        body: formData,
+        onUploadProgress: (progressEvent) => {
+          const percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+          setUploadProgress(percentCompleted);
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      if (data.status === 'success') {
+        // Remove loading message
+        setMessages(prev => prev.filter(msg => msg.content !== '⏳ Processing your document...'));
+        
+        setMessages(prev => [...prev, {
+          type: 'text',
+          content: `📄 Document uploaded successfully: ${file.name}`,
+          timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+          status: true,
+        }, data.response]);
+      } else {
+        throw new Error(data.message || 'Upload failed');
+      }
+    } catch (error) {
+      console.error('Error:', error);
+      setMessages(prev => [...prev.filter(msg => msg.content !== '⏳ Processing your document...'), {
+        type: 'text',
+        content: `❌ Error uploading document: ${error.message}`,
+        timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+        status: true,
+      }]);
+    } finally {
+      setIsLoading(false);
+      setUploadProgress(0);
+      // Reset file input
+      if (fileInputRef.current) {
+        fileInputRef.current.value = '';
+      }
+    }
+  };
+
   const handleKeyPress = (e) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
@@ -149,10 +259,35 @@ const ChatBot = () => {
             isUser={index % 2 === 0}
           />
         ))}
+        {uploadProgress > 0 && uploadProgress < 100 && (
+          <div className="w-full bg-gray-200 rounded-full h-2.5 mb-4">
+            <div 
+              className="bg-blue-500 h-2.5 rounded-full transition-all duration-300"
+              style={{ width: `${uploadProgress}%` }}
+            ></div>
+          </div>
+        )}
         <div ref={messagesEndRef} />
       </div>
 
       <div className="flex items-center gap-2 px-4 py-2 border-t">
+        <input
+          type="file"
+          ref={fileInputRef}
+          onChange={handleFileUpload}
+          className="hidden"
+          accept=".pdf,.jpg,.jpeg,.png"
+        />
+        <button 
+          className={`p-2 hover:bg-gray-100 rounded-full relative ${isLoading ? 'opacity-50 cursor-not-allowed' : ''}`}
+          onClick={() => !isLoading && fileInputRef.current?.click()}
+          disabled={isLoading}
+        >
+          <Upload className="w-5 h-5" />
+          <span className="absolute -top-1 -right-1 text-xs text-white bg-blue-500 rounded-full px-1">
+            PDF
+          </span>
+        </button>
         <button className="p-2 hover:bg-gray-100 rounded-full">
           <Copy className="w-5 h-5" />
         </button>
@@ -174,7 +309,7 @@ const ChatBot = () => {
             value={inputValue}
             onChange={(e) => setInputValue(e.target.value)}
             onKeyDown={handleKeyPress}
-            placeholder="Ask FinSaathi about your finances..."
+            placeholder="Ask FinSaathi about your finances or upload a document..."
             className="flex-1 bg-transparent outline-none"
             disabled={isLoading}
           />

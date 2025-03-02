@@ -1,6 +1,7 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, send_file
 from flask_cors import CORS
 from werkzeug.middleware.proxy_fix import ProxyFix
+from werkzeug.utils import secure_filename
 from groq import Groq
 from datetime import datetime
 from dotenv import load_dotenv
@@ -11,8 +12,8 @@ import yfinance as yf
 from financial_narrative_generator import FinancialNarrativeGenerator  # Import the new class
 from dataclasses import dataclass
 from news_fetcher import NewsFetcher
+from chat import FinSaathiAI  # Import the FinSaathiAI class from chat.py
 
-from flask import Flask, request, send_file, jsonify
  # You'll need to use a Python PDF library like reportlab or PyPDF2
 from reportlab.lib import colors
 from reportlab.lib.pagesizes import A4
@@ -25,7 +26,6 @@ from io import BytesIO
 import base64
 from PIL import Image as PILImage
 import json
-from datetime import datetime
 import markdown
 import re
 import matplotlib.pyplot as plt
@@ -54,33 +54,29 @@ CORS(app, resources={r"/api/*": {"origins": "http://localhost:3000"}})
 # Use ProxyFix for proper handling of proxy headers
 # app.wsgi_app = ProxyFix(app.wsgi_app, x_proto=1, x_host=1)
 
-class FinSaathiAI:
-    def __init__(self):
-        self.api_key = os.environ.get('GROQ_API_KEY')
-        if not self.api_key:
-            raise ValueError("Groq API key must be provided in the GROQ_API_KEY environment variable.")
-        self.client = Groq(api_key=self.api_key)
-    
-    def get_response(self, user_input):
+UPLOAD_FOLDER = 'uploads'
+ALLOWED_EXTENSIONS = {'pdf', 'jpg', 'jpeg', 'png'}
+
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+
+# Create uploads directory if it doesn't exist
+os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+
+def allowed_file(filename):
+    return '.' in filename and \
+           filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
+# Add this before the Flask app initialization
+user_sessions = {}
+
+def get_or_create_session(user_id):
+    """Get or create a FinSaathiAI session for a user"""
+    if user_id not in user_sessions:
         try:
-            response = self.client.chat.completions.create(
-                model="llama3-70b-8192",
-                messages=[
-                    {
-                        "role": "system",
-                        "content": """You are a Market Education Chatbot, designed to explain financial concepts, investment principles, and economic fundamentals in a clear and engaging way. You do not provide financial advice, stock recommendations, or market predictions. If a user asks an off-topic question, politely redirect them to market-related topics. Keep responses simple, factual, and educational."""
-                    },
-                    {
-                        "role": "user",
-                        "content": user_input
-                    }
-                ],
-                temperature=0.7,
-                max_tokens=1000
-            )
-            return response.choices[0].message.content.strip()
+            user_sessions[user_id] = FinSaathiAI()
         except Exception as e:
-            raise Exception(f"Error getting AI response: {str(e)}")
+            return None, f"Error initializing session: {str(e)}"
+    return user_sessions[user_id], None
 
 # Initialize components
 try:
@@ -116,21 +112,27 @@ def chat():
         if not data or 'message' not in data:
             return create_error_response("No message provided")
 
-        ai_response = ai_assistant.get_response(data['message'])
+        message = data['message'].strip()
+        
+        # Handle special commands
+        if message.lower() == 'summarize':
+            response = ai_assistant.summarize_document()
+        else:
+            response = ai_assistant.get_response(message)
+            
         current_time = datetime.now().strftime("%I:%M %p")
         
         return jsonify({
             "status": "success",
             "response": {
                 "type": "text",
-                "content": ai_response,
+                "content": response,
                 "timestamp": current_time,
                 "status": True
             }
         })
     except Exception as e:
         return create_error_response(str(e), 500)
-
 
 @app.errorhandler(404)
 def not_found(error):
@@ -520,6 +522,51 @@ def generate_pdf():
         return send_file(buffer, mimetype='application/pdf')
     except Exception as e:
         return create_error_response(str(e), 500)
+
+@app.route('/api/upload', methods=['POST'])
+def upload_file():
+    try:
+        if 'file' not in request.files:
+            return create_error_response("No file part")
+        
+        file = request.files['file']
+        if file.filename == '':
+            return create_error_response("No selected file")
+            
+        if file and allowed_file(file.filename):
+            filename = secure_filename(file.filename)
+            filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+            file.save(filepath)
+            
+            try:
+                # Use the existing ai_assistant instance
+                if ai_assistant is None:
+                    return create_error_response("AI assistant not initialized")
+                
+                # Use upload_document from chat.py
+                result = ai_assistant.upload_document(filepath)
+                current_time = datetime.now().strftime("%I:%M %p")
+                
+                return jsonify({
+                    "status": "success",
+                    "response": {
+                        "type": "text",
+                        "content": result,
+                        "timestamp": current_time,
+                        "status": True
+                    }
+                })
+            finally:
+                # Clean up the file after processing
+                try:
+                    if os.path.exists(filepath):
+                        os.remove(filepath)
+                except Exception as e:
+                    print(f"Error removing temporary file: {e}")
+            
+        return create_error_response("Invalid file type. Please upload PDF or image files.")
+    except Exception as e:
+        return create_error_response(f"Error processing file: {str(e)}")
 
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))
