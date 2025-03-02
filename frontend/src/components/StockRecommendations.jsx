@@ -119,7 +119,7 @@ export default function StockRecommendations({ onSelectStock, className }) {
         <div className="flex justify-between items-center">
           <CardTitle className="flex items-center gap-2">
             <Lightbulb className="h-5 w-5" />
-            AI Insights
+            AI Recommendations
           </CardTitle>
           <Button variant="outline" size="sm" onClick={fetchRecommendations}>
             <RefreshCw className="h-4 w-4" />
@@ -173,11 +173,11 @@ export default function StockRecommendations({ onSelectStock, className }) {
                   </div>
 
                   {/* Insights Preview */}
-                  {stock.insights && (
+                  {/* {stock.insights && (
                     <div className="text-xs text-muted-foreground mt-3 pt-3 border-t line-clamp-2">
                       {stock.insights}
                     </div>
-                  )}
+                  )} */}
                 </CardContent>
               </Card>
             ))}
