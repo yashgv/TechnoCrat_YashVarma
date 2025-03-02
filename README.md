@@ -1,9 +1,9 @@
 ## AI-Driven Equity Market Analysis & Stock Prediction
 One-stop solution for stock analysis, real-time trading simulation, live updates, financial document processing, and AI-powered stock recommendations.
 
-C:\Users\yv449\Desktop\Synergy\test\TechnoCrat_YashVarma\frontend\image.png
+![alt text](frontend/image.png)
 
-C:\Users\yv449\Desktop\Synergy\test\TechnoCrat_YashVarma\frontend\image-1.png
+![alt text](frontend/image-1.png)
 
 ## Project Overview
 This project aims to create an AI-powered financial tool that helps users:
