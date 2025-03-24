@@ -1,3 +1,5 @@
+### ArthAI
+
 ## AI-Driven Equity Market Analysis & Stock Prediction
 One-stop solution for stock analysis, real-time trading simulation, live updates, financial document processing, and AI-powered stock recommendations.
 
